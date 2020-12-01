@@ -1,0 +1,57 @@
+# https://taskfile.dev
+
+version: "2"
+
+tasks:
+  initEnvironment:
+    desc: Initialize CI environment
+    cmds:
+      - |
+        asdf install \
+          && cd ./1-infra \
+          && terraform init \
+          && cd ../2-sandbox_config \
+          && terraform init
+
+  validatePreCommitHooks:
+    desc: Validate the pre-commit hooks
+    cmds:
+      - pre-commit install
+      - pre-commit run -a
+
+  applyExample:
+    dir: .
+    desc: Apply the example infra
+    cmds:
+      - task: applyExample1
+      - task: applyExample2
+
+  applyExample1:
+    dir: ./1-infra
+    cmds:
+      - terraform init
+      - terraform apply -auto-approve -input=false -var-file=override.tfvars -target=module.subnets
+      - terraform apply -auto-approve -input=false -var-file=override.tfvars
+
+  applyExample2:
+    dir: ./2-sandbox_config
+    cmds:
+      - terraform init
+      - terraform apply -auto-approve -input=false -var-file=override.tfvars
+
+  destroyExample:
+    desc: Destroy the example infra
+    cmds:
+      - task: destroyExample2
+      - task: destroyExample1
+
+  destroyExample1:
+    dir: ./1-infra
+    cmds:
+      - terraform destroy -auto-approve -input=false -var-file=override.tfvars -target=module.rancher-k8s-cluster.rancher2_cluster.default
+      - terraform destroy -auto-approve -input=false -var-file=override.tfvars
+
+  destroyExample2:
+    dir: ./2-sandbox_config
+    cmds:
+      - terraform destroy -auto-approve -var-file=override.tfvars
