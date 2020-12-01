@@ -12,23 +12,19 @@ tasks:
   test:
     desc: Run automated tests
     cmds:
-      - echo "Add your logic here"
-      - exit 1
+      - echo "N/A for now. TODO: Use TerraTest"
 
   secure:
     desc: Run automated security checks
     cmds:
-      - echo "Add your logic here"
-      - exit 1
+      - echo "N/A. The validate task runs tfsec"
 
   deliver:
     desc: Deliver artifact
     cmds:
-      - echo "Add your logic here"
-      - exit 1
+      - echo "N/A. This project does not have a deliverable artifact"
 
   deploy:
     desc: Deploy project
     cmds:
-      - echo "Add your logic here"
-      - exit 1
+      - echo "N/A. This project is an example only and does not support a persistent live deployment."
