@@ -10,6 +10,8 @@ The purpose of this repository is to provide a complete example of the EVTR and 
 
 ### High-level design
 
+The EVTR is an ephemeral sandbox environment that can easily be created and destroyed. The sandbox consists of a collection of DevSecOps tools that are integrated together. This sandbox environment can be used for training DevSecOps practices and provides hands-on experience with a software factory.
+
 This project has been designed to do the following:
 
 - Provide a basic ephemeral DevSecOps environment
@@ -40,18 +42,76 @@ The EVTR is made up of four Terraform modules:
 
 ### Instructions
 
+#### Overview
+
+The complete setup in this repository happens in two stages. The first stage is the setup of infrastructure, and the second stage is configuring the sandbox.
+
+We start by creating the [Rancher master cluster](https://github.com/saic-oss/terraform-aws-rke-rancher-master-cluster).
+Then, we will create the [Rancher worker cluster](https://github.com/saic-oss/terraform-aws-rancher-k8s-cluster) that is managed by the aforementioned Rancher master cluster.
+Finally, we create the [DevSecOps Sandbox](https://github.com/saic-oss/terraform-k8s-devsecops-sandbox) tools in this worker cluster. Now, our infrastructure is setup.
+
+The sandbox tools are configured using the [Sandbox Configuration](https://github.com/saic-oss/terraform-devsecops-sandbox-config). This populates users in Gitlab, creates an example project, and sets up jobs in Jenkins for the Gitlab integration.
+
 #### Complete Example
 
+To create an EVTR, begin by cloning this repository.
+
+```
+git clone https://github.com/saic-oss/evtr-complete-example.git
+```
+
+Next, create an `override.tfvars` in both [1-infra](examples/complete/1-infra) and [2-sandbox_config](examples/complete/2-sandbox_config) folders.
+
+> There are a few parameters that are specific to your AWS account and your domain name you want to use that are not included in the example `terraform.tfvars`. This is why we are using an `override.tfvars` file and adding the missing parameters to that.
+
+Finally, we will begin standing up the EVTR.
 For convenience, a Taskfile has been provided, to be used with [go-task][go-task]. Note that you will need to change your working directory to /examples/complete in order to run these tasks.
+
+To create:
 
 ```
 task applyExample
+```
+
+> This example is standing up real resources on AWS which could incur costs to you.
+
+To destroy:
+
+```
 task destroyExample
 ```
 
-> There are a few parameters that are specific to your AWS account and your domain name you want to use that are not included in the example `terraform.tfvars`. You should create a `override.tfvars` file and add the missing parameters to that.
-
 Please take a look at the [1-infra](examples/complete/1-infra) and [2-sandbox_config](examples/complete/2-sandbox_config) folders for the complete example.
+
+## Using EVTR In Class
+
+### Instructors
+
+The EVTR you are creating for class needs to be created well ahead of class time. It takes a non-trivial amount of time for resources to be provisioned in AWS.
+
+You should budget at least an hour to create the EVTR and retrieve login credentials for the students.
+
+Once setup of the EVTR is finished, you will need the Gitlab endpoint and user credentials for students to login.
+
+You can retrieve the Gitlab endpoint with the following command in the `examples/complete/1-infra` directory:
+
+```
+terraform output gitlab_endpoint
+```
+
+You can retrieve user credentials with the following command in the `examples/complete/2-sandbox_config` directory:
+
+```
+terraform output gitlab_user_credentials
+```
+
+### Students
+
+Students should navigate to the Gitlab endpoint provided by the instructor. This will prompt for a username and password.
+
+After students type in their assigned username and password, they will be brought to a page showing Gitlab projects.
+
+Now, hands-on learning can begin.
 
 ## Contributing
 
